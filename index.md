@@ -23,7 +23,7 @@ This project examines whether countries that import higher quantities of fruit p
 
 [View Project](https://github.com/Spatial-Data-Analytics-2025/Homework2)
 
-<img src="images/chicago-spatial-thumbnail.jpg"/>
+<img src="images/msc_vessel.jpg"/>
 
 **Summary:**  
 Geospatial analysis of fuel station placement in Chicago using spatial buffers, OpenStreetMap basemaps, and proximity analysis to schools to evaluate infrastructure and potential relocation zones.

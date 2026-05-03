@@ -2,34 +2,47 @@
 
 ---
 
-### Category Name 1 
+# Featured Projects
 
-[Project 1 Title](/sample_page)
+## 1. Student Behavior Analysis – Holyoke High School
+
+<a href="/projects/student-behavior-analysis/">
 <img src="images/dummy_thumbnail.jpg?raw=true"/>
+</a>
+
+**Summary:**  
+Analysis of 1,000+ behavioral referrals to identify patterns in student behavior, repeated incidents, and key drivers of classroom disruptions.
+
+**Key Insights:**
+- Behavioral referrals are concentrated among a small subset of students  
+- Skipping class and classroom disruption are the most common referral types  
+- A small group of students accounts for a disproportionate share of total incidents  
+
+👉 [View Project](projects/student-behavior-analysis/)
 
 ---
-[Project 2 Title](/pdf/sample_presentation.pdf)
+
+## 2. Project 2 (Coming Soon)
+
+<a href="http://example.com/">
 <img src="images/dummy_thumbnail.jpg?raw=true"/>
+</a>
 
----
-[Project 3 Title](http://example.com/)
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+**Summary:**  
+(Add your second project here — ideally something like supply chain, operations, or forecasting once ready.)
 
----
+**Key Skills:**
+- Data cleaning
+- Visualization
+- Statistical analysis
 
-### Category Name 2
-
-- [Project 1 Title](http://example.com/)
-- [Project 2 Title](http://example.com/)
-- [Project 3 Title](http://example.com/)
-- [Project 4 Title](http://example.com/)
-- [Project 5 Title](http://example.com/)
+👉 [View Placeholder](http://example.com/)
 
 ---
 
-
-
-
 ---
-<p style="font-size:11px">Page template forked from <a href="https://github.com/evanca/quick-portfolio">evanca</a></p>
-<!-- Remove above link if you don't want to attibute -->
+
+<p style="font-size:11px">
+Page template forked from 
+<a href="https://github.com/evanca/quick-portfolio">evanca</a>
+</p>

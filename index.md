@@ -6,28 +6,46 @@
 
 ---
 
-### Fruit Import Supply Chain & Life Expectancy Analysis
+## Fruit Import Supply Chain & Life Expectancy Analysis
 
 [View Project](projects/fruit-import-analysis/fruit_import_analysis.html)
+
 <img src="images/fruit_import_thumbnail.png"/>
 
-**Research Question:**  
-How are national fruit import levels associated with life expectancy across countries?
+**Summary:**  
+This project examines whether countries that import higher quantities of fruit per capita tend to have higher life expectancy. Fruit imports are used as a proxy for dietary access across countries in the context of global trade and development.
+
+---
+
+---
+
+## Chicago Fuel Station Spatial Analysis
+
+[View Project](https://github.com/Spatial-Data-Analytics-2025/Homework2)
+
+<img src="images/chicago_spatial_thumbnail.png"/>
 
 **Summary:**  
-This project examines whether countries that import more fruit per capita tend to have higher life expectancy, using fruit imports as a proxy for dietary access across countries.
+Geospatial analysis of fuel station placement in Chicago using spatial buffers, OpenStreetMap basemaps, and proximity analysis to schools to evaluate infrastructure and potential relocation zones.
+
+**Methods:**
+- Spatial analysis using `sf`
+- Buffer creation (proximity zones)
+- GIS visualization with ggplot2
+- Overlay of infrastructure layers
 
 ---
 
 ---
 
-### Student Behavior Analysis – Holyoke High School (In Progress)
+### Student Behavior Analysis (In Progress)
 
 [View Project](#)
+
 <img src="images/dummy_thumbnail.jpg?raw=true"/>
 
 **Summary:**  
-Analysis of behavioral referral data to identify patterns in student behavior and repeated incidents across student groups.
+Analysis of behavioral referral data to identify patterns in student behavior, repeated incidents, and potential intervention opportunities across student groups.
 
 ---
 

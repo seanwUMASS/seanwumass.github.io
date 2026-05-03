@@ -1,0 +1,363 @@
+---
+title: "Final Project Check in 2"
+author: "Sean Read"
+format: 
+  html: 
+    embed-resources: true
+    self-contained-math: true
+---
+
+
+## Research Question
+
+Fruit consumption is widely recognized as an important factor influencing population health and life expectancy. Low intake of fruits and vegetables has been linked to an increased risk of major chronic diseases, and inadequate consumption contributes significantly to preventable mortality worldwide. Karen Lock et al. note that “the total worldwide mortality currently attributable to inadequate consumption of fruit and vegetables is estimated to be up to 2.635 million deaths per year” (Lock et al., 2005, p. 100). Similarly, Annemarie E. Baars et al. (2019) identify inadequate fruit and vegetable consumption as an established risk factor for cardiovascular disease, cancer, and other conditions that contribute to increased mortality rates. Together, these findings suggest a strong relationship between fruit consumption and population health outcomes, where inadequate consumption is associated with shorter life expectancy and higher disease risk.
+
+While much of the existing literature focuses on individual dietary behavior, fruit availability may also be influenced by macro-level factors such as international trade. The availability of fruits and vegetables is increasingly influenced by global agricultural markets and foreign trade policies. Research by Tianyu Yu et al. (2022) highlights how trade agreements, labor costs, and currency differences have contributed to the rapid growth of fruit and vegetable imports in countries such as the United States. These findings suggest that international trade patterns play an important role in shaping the accessibility of fresh produce within national food markets.
+
+Building on existing literature, this project examines the relationship between fruit import levels and life expectancy at the country level. Specifically, this study asks the following research question:
+
+How are national fruit import levels associated with life expectancy across countries.
+
+This study explores whether countries that import higher quantities of fruit per capita tend to have a higher national life expectancy. While existing literature suggests that fruit consumption can improve health outcomes (Lock et al., 2005; Baars et al., 2019), life expectancy at the country level may be more strongly influenced by broader factors such as national wealth, access to healthcare, and education.
+
+## Hypotheses
+
+H₀: There is no association between fruit imports per capita and life expectancy across countries.
+
+H₁: Countries with higher fruit imports per capita tend to have higher life expectancy.
+
+While individual fruit consumption has been linked to better health outcomes, and fruit accessibility has been studied as a factor influencing consumption, this study examines the relationship between fruit import levels and life expectancy at the country level. Fruit import levels are used as a proxy to account for countries where domestic fruit production is limited. This macro-level approach tests whether countries that import higher volumes of fruit experience corresponding benefits in life expectancy. Focusing on import levels at the country level is an approach that has not been widely examined in previous research.
+
+## Data Sources & Variables
+
+Population, life expectancy, and other socio-economic variables are from the World Bank’s World Development Indicators dataset. Fruit import data comes from the United Nations FAO database (FAOSTAT), which provides detailed trade statistics on agricultural commodities. This analysis focuses on 2023, the most recent year for which both datasets have sufficiently complete data. Since this project does not examine trends over time, a single-year approach is appropriate.
+
+Dependent Variable:
+
+life_exp: Life expectancy at birth (years), used as the primary indicator of population health.
+
+Independent Variable:
+
+fruit_import_per_capita: Total fruit imports divided by population (kg per person), used as a proxy for national fruit availability.
+
+Control Variables:
+
+GDP_PCAP: GDP per capita (PPP, current international $), used to measure economic development.
+
+urban: Urban population (%), capturing urbanization and infrastructure access.
+
+electricity: Access to electricity (% of population), used as a proxy for basic infrastructure.
+
+population: Total population, included to account for country size effects.
+
+These control variables are included to account for potential confounding factors that may influence both fruit import levels and life expectancy, particularly broader measures of economic and infrastructural development.
+
+Additional variables:
+
+food_exports and food_imports are included in the dataset for potential robustness checks but are not included in the primary model specification.
+
+## Data Cleaning and Preparation
+
+The analysis begins by importing and merging World Bank development indicators with FAOSTAT fruit trade data. The World Bank dataset is reshaped from long to wide format to allow country-level merging across indicators.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(viridis)
+
+
+# Read World Bank data
+wb <- read_csv("worldbank_data.csv", na = "..", show_col_types = FALSE)
+
+wb_clean <- wb %>%
+  select(`Country Name`, `Series Name`, `2023 [YR2023]`) %>%
+  rename(
+    Country = `Country Name`,
+    Variable = `Series Name`,
+    Value = `2023 [YR2023]`
+  ) %>%
+  filter(!is.na(Variable) & Variable != "") %>%
+  group_by(Country, Variable) %>%
+  summarise(Value = mean(Value, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = Variable, values_from = Value)
+
+wb_wide <- wb_clean
+```
+
+```{r}
+# Read fruit import data
+fruit_import <- read_csv("fruit_import_country.csv", show_col_types = FALSE) %>%
+  filter(grepl("Fruit", Commodity, ignore.case = TRUE),
+         Flow == "Import") %>%
+  group_by(`Country or Area`, Year) %>%
+  summarise(fruit_import_kg = sum(`Weight (kg)`, na.rm = TRUE),
+            .groups = "drop") %>%
+  filter(Year == 2023) %>%
+  select(Country = `Country or Area`, fruit_import_kg)
+```
+
+```{r}
+# Merge datasets
+combined_data <- wb_wide %>%
+  left_join(fruit_import, by = "Country") %>%
+  mutate(
+    fruit_import_per_capita = fruit_import_kg / `Population, total`
+  )
+```
+
+```{r}
+# Renaming columns
+analysis_data <- combined_data %>%
+  rename(
+    country = Country,
+    life_exp = `Life expectancy at birth, total (years)`,
+    GDP_PCAP = `GDP per capita, PPP (current international $)`,
+    literacy = `Literacy rate, adult total (% of people ages 15 and above)`,
+    urban = `Urban population (% of total population)`,
+    electricity = `Access to electricity (% of population)`,
+    population = `Population, total`,
+    education_spending = `Government expenditure on education, total (% of GDP)`,
+    food_exports = `Food exports (% of merchandise exports)`,
+    food_imports = `Food imports (% of merchandise imports)`
+  ) %>%
+  # Keeping only variables with low NA counts
+  select(country, life_exp, fruit_import_per_capita, GDP_PCAP, urban, electricity, population) %>%
+  # remove missing values
+  na.omit()
+```
+
+Data inspection
+
+```{r}
+# Structure of dataset
+glimpse(analysis_data)
+
+# Summary statistics
+summary(analysis_data)
+
+# Preview data
+head(analysis_data)
+```
+
+The final dataset includes 126 countries for 2023 and contains economic, demographic, and food trade indicators. To improve consistency across models, variables with substantial missing data, in particular literacy and education spending were excluded from the analysis. This allows for a larger and more balanced sample across countries.
+
+Fruit import data is still missing for some countries due to incomplete trade reporting, but the remaining observations provide sufficient coverage for analysis at the country level. Fruit imports per capita vary widely, ranging from near zero to over 250 kg per person, highlighting substantial differences in global food trade patterns and access to imported produce.
+
+All regression models are estimated using a consistent dataset with complete observations for the selected variables, resulting in a final sample size of 126 countries.
+
+## Model 1: Baseline Relationship
+
+The first model estimates the bivariate relationship between fruit import levels per capita and life expectancy without controlling for additional variables. This provides a baseline measure of the association between the key independent and dependent variables.
+
+```{r}
+model1 <- lm(life_exp ~ fruit_import_per_capita, data = analysis_data)
+
+summary(model1)
+
+```
+
+The results indicate a positive and statistically significant relationship between fruit imports per capita and life expectancy. The coefficient of fruit imports per capita is 0.078 suggesting that a one-unit increase in fruit imports per capita is associated with an average increase of 0.078 years in life expectancy.
+
+The model explains approximately 24% of the variation in life expectancy across countries, with an R² value of 0.24. While this suggests a meaningful relationship, a large portion of the variation remains unexplained.
+
+## Model 2: Controlling for Economic and Structural Factors
+
+The second model expands on the baseline specification by including control variables related to economic development and infrastructure. These include GDP per capita, urbanization, access to electricity, and population size.
+
+The purpose of this model is to assess whether the relationship between fruit imports per capita and life expectancy remains after accounting for broader structural factors that are likely to influence both variables.
+
+```{r}
+model2 <- lm(life_exp ~ fruit_import_per_capita + GDP_PCAP + urban + electricity + population,
+             data = analysis_data)
+
+summary(model2)
+```
+
+The model's results differ from the baseline model as the coefficient on fruit imports per capita becomes smaller and statistically insignificant. The coefficient for fruit imports is close to zero, suggesting that there is no meaningful direct association after accounting for structural factors.
+
+In contrast, GDP per capita and access to electricity are both positive and highly statistically significant predictors of life expectancy. Urbanization is also positively associated with life expectancy and is statistically significant. These findings are consistent with existing literature on the relationship between economic development and life expectancy.
+
+Population size is not statistically significant in this model, suggesting that country size does not affect life expectancy once other variables are controlled for.
+
+Overall, the model explains approximately 74% of the variation in life expectancy across countries, indicating strong explanatory power. This represents a substantial improvement over the baseline model and highlights the importance of controlling for structural and economic factors when examining cross-country differences in life expectancy.
+
+## Model 3: Forward Selection Model
+
+The third model uses a forward selection approach to improve the model while ensuring that fruit imports per capita is included from the start, as it is the key independent variable. Additional control variables are then added based on their contribution to explanatory power.
+
+```{r}
+# Start with base model
+base_model <- lm(life_exp ~ fruit_import_per_capita, 
+                  data = analysis_data)
+
+# Define model with all variables
+full_model <- lm(life_exp ~ fruit_import_per_capita + GDP_PCAP + urban + electricity + population,
+                 data = analysis_data)
+
+# Forward selection starting from base model
+  model3_forward <- step(
+  base_model,
+ scope = list(lower = base_model, upper = full_model),
+ direction = "forward",
+ trace = 0
+)
+
+ summary(model3_forward)
+
+```
+
+The results of the forward selection model show that GDP per capita, access to electricity, and urbanization are all statistically significant predictors of life expectancy. These findings are consistent with Model 2, where the same variables also emerge as strong determinants of life expectancy. The forward selection process removes population from the model, as it remains statistically insignificant.
+
+Fruit imports per capita remains statistically insignificant with a near zero coefficient. This is consistent with Model 2, suggesting that once economic and structural variables are accounted for, there is no meaningful direct relationship between fruit import levels and life expectancy.
+
+The adjusted R² of 0.746 indicates that the model explains a large proportion of variation in life expectancy across countries. The relatively small difference between R² and adjusted R² also suggests that the model is not over fitting despite including multiple predictors.
+
+Compared to earlier models, Model 3 provides a more stable and interpretable specification, as it maintains a consistent sample while retaining strong explanatory power.
+
+## Model 4: Robustness Check (Log-Transformed Variables)
+
+The final model tests whether the results are sensitive to how key variables are measured by applying log transformations to both fruit imports per capita and GDP per capita. As shown further in the visualization section fruit import levels are highly right-skewed. A small number of countries have very large import volumes, while most countries import relatively small quantities of fruit. GDP per capita follows a similar pattern across countries. Without transformation, these extreme values can disproportionately influence the regression results.
+
+```{r}
+analysis_data_2 <- analysis_data %>%
+  mutate(
+    log_fruit_import = log(fruit_import_per_capita + 1),
+    log_GDP = log(GDP_PCAP)
+  )
+
+model4 <- lm(
+  life_exp ~ log_fruit_import + log_GDP + electricity + urban,
+  data = analysis_data_2
+)
+
+summary(model4)
+```
+
+The results show that the log of fruit imports per capita is positively associated with life expectancy and is marginally significant at the 10% level. This suggests that increases in fruit imports are associated with small increases in life expectancy, although the magnitude of this effect remains relatively small.
+
+GDP per capita remains a strong and highly statistically significant predictor of life expectancy, even after transformation. Access to electricity also continues to show a positive and significant relationship, while urbanization is positive and marginally significant.
+
+Compared to the fully linear model, model fit is improved, with an adjusted R² of approximately 0.767. The log transformation reduces the influence of extreme values and provides a more accurate representation of the data at the country level. Using log transformations changes the interpretation of the model. Instead of measuring the effect of a one-unit increase, the coefficients now measure percentage changes in fruit imports and GDP per capita and their association with changes in life expectancy.
+
+## Model Comparison and Selection
+
+Across all four models, the relationship between fruit imports per capita and life expectancy varies depending on the inclusion of control variables and the transformations applied.
+
+In Model 1, fruit imports per capita is positive and statistically significant. This suggests a strong bivariate association. Countries with higher fruit import levels per capita tend to have higher life expectancy. However, this relationship excludes variables related to economic development and infrastructure.
+
+In Model 2, economic and infrastructure variables are added. The coefficient for fruit imports per capita becomes small and insignificant. This suggests that the initial relationship in Model 1 is largely explained by confounding factors such as GDP per capita, urbanization, and electricity access.
+
+In Model 3, an automated forward selection process was implemented, which produced a similar result to Model 2. The population variable was dropped as it was not statistically significant. Fruit imports per capita remains statistically insignificant, while GDP per capita, electricity access, and urbanization remain significant and stable predictors. The adjusted R² of 0.746 remains nearly identical to Model 2.
+
+In Model 4, both fruit imports per capita and GDP per capita are log-transformed to account for skewness and nonlinear relationships. After applying these transformations, the log of fruit imports becomes positive and marginally statistically significant. This suggests that the relationship between fruit imports and life expectancy is better captured in proportional terms. GDP per capita and electricity access remain strong and statistically significant predictors, while urbanization is positive and marginally significant.
+
+Model 1: Adjusted R² ≈ 0.234
+Model 2: Adjusted R² ≈ 0.744
+Model 3: Adjusted R² ≈ 0.746
+Model 4: Adjusted R² ≈ 0.767
+
+Model 4 provides the best overall fit and the highest adjusted R². It also improves the specification by addressing the skewed distribution of key variables, reducing the influence of extreme values.
+
+The preferred model is Model 4. This model has strong explanatory power, and the use of log transformations captures the proportional relationships that are often seen in cross-country data. In this model, the coefficient on fruit imports per capita reflects percentage changes rather than absolute increases, providing a more meaningful interpretation given the large variation in import levels across countries.
+
+## Regression Diagnostics
+
+```{r}
+# Diagnostic plots for final model
+par(mfrow = c(2, 2))
+par(mar = c(4, 4, 2, 1))
+plot(model4)
+```
+
+The diagnostic plots assess whether the assumptions of linear regression are reasonably satisfied.
+
+The Residuals vs Fitted plot shows that residuals are mostly centered around zero with no strong pattern. This suggests that the linear model is appropriate after the log transformations of fruit imports per capita and GDP per capita. There is some increase in the spread of residuals at higher fitted values, indicating mild heteroskedasticity.
+
+The Q-Q plot shows that most fall along the diagonal line indicating that the residuals are approximately normally distributed. However, there are small deviations at the lower and upper tails, suggesting possible outliers, as noted previously.
+
+The Scale-Location plot shows small variations in the spread of residuals, again suggesting some heteroskedasticity. However, the overall trend is relatively flat, indicating that the variance of errors is fairly constant across fitted values.
+
+The Residuals vs Leverage plot identifies a few observations with higher influence on the model, but no single observation appears to drive the models results. These points may slightly affect coefficient estimatess, but they do not meaningfully change the overall model structure or conclusions.
+
+Overall, the diagnostic plots suggest that the model assumptions are reasonably met. While there is mild evidence of heteroskedasticity and minor deviations from normality, the model remains appropriate for interpretation and inference.
+
+## Visualization
+
+```{r}
+# 1. Distribution of Fruit Imports per Capita (Raw)
+p1 <- ggplot(analysis_data, aes(x = fruit_import_per_capita)) +
+  geom_histogram(bins = 30, fill = viridis(1, option = "C"), color = "black", alpha = 0.7) +
+  labs(
+    title = "Distribution of Fruit Imports per Capita",
+    x = "Fruit Imports per Capita (kg/person)",
+    y = "Number of Countries"
+  ) +
+  theme_minimal()
+
+print(p1)
+
+
+# 2. Distribution of Log Fruit Imports per Capita
+p2 <- ggplot(analysis_data_2, aes(x = log_fruit_import)) +
+  geom_histogram(bins = 30, fill = viridis(1, option = "C"), color = "black", alpha = 0.7) +
+  labs(
+    title = "Distribution of Log Fruit Imports per Capita",
+    x = "Log(Fruit Imports per Capita + 1)",
+    y = "Number of Countries"
+  ) +
+  theme_minimal()
+
+print(p2)
+
+
+# 3. Fruit Imports vs Life Expectancy (Log Relationship)
+p3 <- ggplot(analysis_data_2, aes(x = log_fruit_import, y = life_exp)) +
+  geom_point(alpha = 0.7, color = viridis(1, option = "C")) +
+  geom_smooth(method = "lm", se = TRUE, color = viridis(1, option = "C")) +
+  labs(
+    title = "Life Expectancy vs Log Fruit Imports per Capita",
+    x = "Log(Fruit Imports per Capita + 1)",
+    y = "Life Expectancy (years)"
+  ) +
+  theme_minimal()
+
+print(p3)
+
+
+# 4. GDP per Capita vs Life Expectancy
+p4 <- ggplot(analysis_data_2, aes(x = log_GDP, y = life_exp)) +
+  geom_point(alpha = 0.7, color = viridis(1, option = "C")) +
+  geom_smooth(method = "lm", se = TRUE, color = viridis(1, option = "C")) +
+  labs(
+    title = "Life Expectancy vs GDP per Capita",
+    x = "Log GDP per Capita",
+    y = "Life Expectancy (years)"
+  ) +
+  theme_minimal()
+
+print(p4)
+```
+
+The visualizations show a moderately positive relationship between fruit imports per capita and life expectancy, although the distribution is highly skewed. Most countries have low levels of fruit imports, while a small number of countries import much larger quantities, reflecting differences in trade capacity and levels of economic development. The transformation of fruit imports using a logarithmic scale reduces this skewness and provides a clearer pattern in the relationship with life expectancy.
+
+The GDP per capita visualization shows a strong positive association with life expectancy, consistent with established literature on economic development and health outcomes. This strong relationship suggests that broader economic conditions are an important confounding factor when assessing the relationship between fruit imports and life expectancy.
+
+## Conclusion
+
+This study examined the relationship between fruit import levels per capita and life expectancy across 126 countries using cross-sectional data from 2023. The analysis began with a simple bivariate model and progressively introduced economic and structural controls, followed by a robustness check using log-transformed variables.
+
+The baseline model showed a positive association between fruit imports and life expectancy. However, this relationship weakened substantially once GDP per capita, electricity access, urbanization, and population were included. In these expanded models, fruit imports per capita became statistically insignificant, while GDP per capita and electricity access consistently emerged as strong predictors of life expectancy. This suggests that the initial relationship was largely driven by broader development differences across countries rather than fruit imports themselves.
+
+The final model introduced log transformations for fruit imports and GDP per capita to account for strong right skewness in the data and to better capture proportional relationships. This specification improved overall model fit and slightly changed the interpretation of fruit imports, which became weakly positive and marginally significant. GDP per capita remained the strongest and most consistent predictor of life expectancy across all models.
+
+Overall, the results indicate that fruit imports are not an independent driver of life expectancy once broader measures of economic development and infrastructure are accounted for. Instead, fruit imports appear to function as a proxy for development: wealthier countries import more fruit and also tend to have higher life expectancy due to stronger healthcare systems, better infrastructure, and higher overall living standards.
+
+While fruit imports may reflect differences in food access across countries, the findings suggest that their relationship with life expectancy is largely indirect and explained by economic and infrastructural conditions. Future research should use more direct measures of dietary intake to better understand how food systems relate to population health outcomes.
+
+## References
+
+Lock, K., Pomerleau, J., Causer, L., Altmann, D. R., & McKee, M. (2005). The global burden of disease attributable to low consumption of fruit and vegetables: Implications for the global strategy on diet. Bulletin of the World Health Organization, 83(2), 100–108.
+
+Huang, K.-M., Guan, Z., & Hammami, A. (2022). The U.S. Fresh Fruit and Vegetable Industry: An Overview of Production and Trade. Agriculture, 12(10), 1719. https://doi.org/10.3390/agriculture12101719
+
+Baars, A.E., Rubio-Valverde, J.R., Hu, Y. et al. Fruit and vegetable consumption and its contribution to inequalities in life expectancy and disability-free life expectancy in ten European countries. Int J Public Health 64, 861–872 (2019). https://doi.org/10.1007/s00038-019-01253-w

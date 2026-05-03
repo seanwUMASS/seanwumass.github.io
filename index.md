@@ -10,7 +10,7 @@
 
 [View Project](projects/fruit-import-analysis/fruit_import_analysis.html)
 
-<img src="images/fruit_import_thumbnail.png"/>
+<img src="images/msc_vessel.jpg"/>
 
 **Summary:**  
 This project examines whether countries that import higher quantities of fruit per capita tend to have higher life expectancy. Fruit imports are used as a proxy for dietary access across countries in the context of global trade and development.
@@ -23,7 +23,7 @@ This project examines whether countries that import higher quantities of fruit p
 
 [View Project](https://github.com/Spatial-Data-Analytics-2025/Homework2)
 
-<img src="images/msc_vessel.jpg"/>
+<img src="chicago-skyline-4.jpg"/>
 
 **Summary:**  
 Geospatial analysis of fuel station placement in Chicago using spatial buffers, OpenStreetMap basemaps, and proximity analysis to schools to evaluate infrastructure and potential relocation zones.

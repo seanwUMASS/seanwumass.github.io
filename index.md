@@ -2,47 +2,36 @@
 
 ---
 
-# Featured Projects
+### Data Science Projects
 
-## 1. Student Behavior Analysis – Holyoke High School
+---
 
-<a href="/projects/student-behavior-analysis/">
+### Fruit Import Supply Chain & Life Expectancy Analysis
+
+[View Project](projects/fruit-import-analysis/fruit_import_analysis.html)
 <img src="images/dummy_thumbnail.jpg?raw=true"/>
-</a>
+
+**Research Question:**  
+How are national fruit import levels associated with life expectancy across countries?
 
 **Summary:**  
-Analysis of 1,000+ behavioral referrals to identify patterns in student behavior, repeated incidents, and key drivers of classroom disruptions.
-
-**Key Insights:**
-- Behavioral referrals are concentrated among a small subset of students  
-- Skipping class and classroom disruption are the most common referral types  
-- A small group of students accounts for a disproportionate share of total incidents  
-
-👉 [View Project](projects/student-behavior-analysis/)
+This project examines whether countries that import more fruit per capita tend to have higher life expectancy, using fruit imports as a proxy for dietary access across countries.
 
 ---
 
-## 2. Project 2 (Coming Soon)
+---
 
-<a href="http://example.com/">
+### Student Behavior Analysis – Holyoke High School (In Progress)
+
+[View Project](#)
 <img src="images/dummy_thumbnail.jpg?raw=true"/>
-</a>
 
 **Summary:**  
-(Add your second project here — ideally something like supply chain, operations, or forecasting once ready.)
-
-**Key Skills:**
-- Data cleaning
-- Visualization
-- Statistical analysis
-
-👉 [View Placeholder](http://example.com/)
+Analysis of behavioral referral data to identify patterns in student behavior and repeated incidents across student groups.
 
 ---
 
 ---
 
-<p style="font-size:11px">
-Page template forked from 
-<a href="https://github.com/evanca/quick-portfolio">evanca</a>
-</p>
+<p style="font-size:11px">Page template forked from <a href="https://github.com/evanca/quick-portfolio">evanca</a></p>
+<!-- Remove above link if you don't want to attibute -->

@@ -9,7 +9,7 @@
 ### Fruit Import Supply Chain & Life Expectancy Analysis
 
 [View Project](projects/fruit-import-analysis/fruit_import_analysis.html)
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/fruit_import_thumbnail.png"/>
 
 **Research Question:**  
 How are national fruit import levels associated with life expectancy across countries?

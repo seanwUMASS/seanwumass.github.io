@@ -6,35 +6,33 @@
 
 ---
 
-## Fruit Import Supply Chain & Life Expectancy Analysis
+### Fruit Import & Life Expectancy Analysis
 
-[View Project](projects/fruit-import-analysis/fruit_import_analysis.html)
+[View Project](projects/fruit-import/fruit_import_analysis.html)
 
 <img src="images/msc_vessel.jpg"/>
 
 **Summary:**  
-This project examines whether countries that import higher quantities of fruit per capita tend to have higher life expectancy. Fruit imports are used as a proxy for dietary access across countries in the context of global trade and development.
+Examines the relationship between national fruit import levels and life expectancy using cross-country World Bank data.
 
 ---
 
 ---
 
-## Chicago Fuel Station Spatial Analysis
+### Chicago Spatial Analysis (Fuel Stations & Schools)
 
-[View Project](https://github.com/Spatial-Data-Analytics-2025/Homework2)
+[View Project](projects/chicago-gis/prepare_maps.html)
 
 <img src="images/chicago-spatial-thumbnail.jpg"/>
 
 **Summary:**  
-Geospatial analysis of fuel station placement in Chicago using spatial buffers, OpenStreetMap basemaps, and proximity analysis to schools to evaluate infrastructure and potential relocation zones.
+GIS-based analysis of fuel station placement in Chicago using spatial buffers and proximity to schools to identify high-risk zones
 
 **Methods:**
 - Spatial analysis using `sf`
 - Buffer creation (proximity zones)
 - GIS visualization with ggplot2
 - Overlay of infrastructure layers
-
----
 
 ---
 

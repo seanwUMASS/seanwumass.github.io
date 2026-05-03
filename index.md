@@ -38,18 +38,5 @@ Geospatial analysis of fuel station placement in Chicago using spatial buffers, 
 
 ---
 
-### Student Behavior Analysis (In Progress)
-
-[View Project](#)
-
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
-
-**Summary:**  
-Analysis of behavioral referral data to identify patterns in student behavior, repeated incidents, and potential intervention opportunities across student groups.
-
----
-
----
-
 <p style="font-size:11px">Page template forked from <a href="https://github.com/evanca/quick-portfolio">evanca</a></p>
 <!-- Remove above link if you don't want to attibute -->

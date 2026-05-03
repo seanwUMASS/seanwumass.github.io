@@ -8,7 +8,7 @@
 
 ### Fruit Import & Life Expectancy Analysis
 
-[View Project](projects/fruit-import/fruit_import_analysis.html)
+[View Project](projects/fruit/Fruit-Import-Analysis.html)
 
 <img src="images/msc_vessel.jpg"/>
 
